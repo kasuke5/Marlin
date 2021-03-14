@@ -29,11 +29,11 @@
   #include "../libs/heatshrink/heatshrink_decoder.h"
 #endif
 
-inline bool bs_serial_data_available(const uint8_t index) {
+inline bool bs_serial_data_available(const serial_index_t index) {
   return SERIAL_IMPL.available(index);
 }
 
-inline int bs_read_serial(const uint8_t index) {
+inline int bs_read_serial(const serial_index_t index) {
   return SERIAL_IMPL.read(index);
 }
 
@@ -352,8 +352,7 @@ public:
               }
             }
             else {
-              SERIAL_ECHO_START();
-              SERIAL_ECHOLNPAIR("Packet header(", packet.header.sync, "?) corrupt");
+              SERIAL_ECHO_MSG("Packet header(", packet.header.sync, "?) corrupt");
               stream_state = StreamState::PACKET_RESEND;
             }
           }
@@ -387,8 +386,7 @@ public:
               stream_state = StreamState::PACKET_PROCESS;
             }
             else {
-              SERIAL_ECHO_START();
-              SERIAL_ECHOLNPAIR("Packet(", packet.header.sync, ") payload corrupt");
+              SERIAL_ECHO_MSG("Packet(", packet.header.sync, ") payload corrupt");
               stream_state = StreamState::PACKET_RESEND;
             }
           }
@@ -406,8 +404,7 @@ public:
           if (packet_retries < MAX_RETRIES || MAX_RETRIES == 0) {
             packet_retries++;
             stream_state = StreamState::PACKET_RESET;
-            SERIAL_ECHO_START();
-            SERIAL_ECHOLNPAIR("Resend request ", int(packet_retries));
+            SERIAL_ECHO_MSG("Resend request ", packet_retries);
             SERIAL_ECHOLNPAIR("rs", sync);
           }
           else
